@@ -12,7 +12,7 @@ For **AWS Organizations multi-account, multi-region deployment**, Designate a ce
 
 ### Walkthrough
 
-[ec2-report-cfn.yaml](https://github.com/aws-samples/amazon-ec2-ami-billing-report/blob/main/ec2-report-cfn.yaml) will create the following resources:
+Start with downloading the [EC2BillingReport.yaml](https://github.com/aws-samples/amazon-ec2-ami-billing-report/blob/main/Templates/CloudFormation/EC2BillingReport.yaml) CloudFormation template, [create a stack on the AWS CloudFormation console](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-create-stack.html). The CloudFormation template will create the following resources:
 
 #### For **Single account deployment**.
 1. Create an [Amazon S3 bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html).
@@ -51,7 +51,7 @@ The stack template includes the following parameters:
 | Organization ID | Yes | AWS Organizations ID. This is used only when you plan to target all accounts within the specified AWS Organization. |
 | Target Accounts and OUs for Systems Manager multi-account multi-region automation | Yes | Comma separated list of AWS Account ids and organizational units (OUs) for the target account(s). For example: ou-srdk-01234567,012345678901,ou-srdk-01234567. |
 | RunOnSchedule | Yes | Select **true** if you want the automation to run (generate the report) on schedule. |
-| EventBridgeRuleSchedule | No | If **RunOnSchedule** set to **true**. The cron or rate expression to use for the EventBridge rule. For example: cron(0 12 ?SAT *) or rate(7 days). Important: The time zone used is UTC. For more information, see https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html.
+| EventBridgeRuleSchedule | No | If **RunOnSchedule** set to **true**. The [cron or rate expression](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html) to use for the EventBridge rule. For example: cron(0 12 ?SAT *) or rate(7 days). Important: The time zone used is UTC.
 
 #### For target account(s) with **AWS Organizations multi-account, multi-region deployment**.
 | Parameter | Required | Description |
