@@ -3,10 +3,11 @@
 This repo hosts CloudFormation templates written for the AWS Blog Post "[How to create an Amazon EC2 AMI usage and billing information report](https://aws.amazon.com/blogs/modernizing-with-aws/how-to-create-an-amazon-ec2-ami-usage-and-billing-information-report/)" published on the [Microsoft Workloads on AWS](https://aws.amazon.com/blogs/modernizing-with-aws/) blog channel. 
 
 ## Overview
-This is a sample solution using [AWS Systems Manager Automation](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html) to execute Python code that extracts metadata from the Amazon EC2 API about running Amazon EC2 instances in a single account or across all regions and accounts in your organization using [ Multi-account Multi-region AWS Systems Manager automations](https://docs.aws.amazon.com/systems-manager/latest/userguide/running-automations-multiple-accounts-regions.html) and then stores the output in a CSV file in an [Amazon Simple Storage Service (Amazon S3)](https://aws.amazon.com/s3/) bucket.
+This is a sample solution using [AWS Systems Manager Automation](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-automation.html) to execute Python code that extracts metadata from the Amazon EC2 API about running Amazon EC2 instances in a single account or across all regions and accounts in your organization using [Multi-account Multi-region AWS Systems Manager automations](https://docs.aws.amazon.com/systems-manager/latest/userguide/running-automations-multiple-accounts-regions.html) and then stores the output in a CSV file in an [Amazon Simple Storage Service (Amazon S3)](https://aws.amazon.com/s3/) bucket.
 
 
 ## Deployment
+### CloudFormation
 ### Prerequisites
 For **AWS Organizations multi-account, multi-region deployment**, Designate a central account and region to run your Automation documents from. This could be a shared services account. To learn why this is needed, please refer to [Running automations in multiple AWS Regions and accounts](https://docs.aws.amazon.com/systems-manager/latest/userguide/running-automations-multiple-accounts-regions.html).
 

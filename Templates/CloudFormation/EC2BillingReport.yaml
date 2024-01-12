@@ -13,10 +13,10 @@
 # HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- 
+
 AWSTemplateFormatVersion: '2010-09-09'
-Description: AWS CloudFormation template to create an EC2 report on multi-account using Amazon Amazon S3, EventBridge, 
-  AWS Lambda, and AWS Systems Manager Automation. 
+Description: AWS CloudFormation template to create an EC2 report on multi-account using Amazon Amazon S3, EventBridge,
+  AWS Lambda, and AWS Systems Manager Automation.
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -54,7 +54,7 @@ Metadata:
       AWSSystemsManagerAutomationExecutionRoleName:
         default: "AWS Systems Manager Automation Execution Role Name"
       CentralAccount:
-        default: "Central AWS Account"        
+        default: "Central AWS Account"
       CentralAccountId:
         default: "Central AWS Account ID"
       SingleAccount:
@@ -82,16 +82,16 @@ Parameters:
     Default: false
     AllowedValues:
     - true
-    - false    
+    - false
   OrganizationID:
     Type: String
-    Description: AWS Organizations ID. This is used only when you plan to target all accounts within the specified AWS Organization.  
+    Description: AWS Organizations ID. This is used only when you plan to target all accounts within the specified AWS Organization.
     Default: o-1234567890
     AllowedPattern: '^o-[a-z0-9]{10,32}$'
   CentralAccountId:
     Type: String
     Description: >-
-      AWS Account ID of the central account (the account from which AWS Systems Manager Automation will be initiated). 
+      AWS Account ID of the central account (the account from which AWS Systems Manager Automation will be initiated).
     Default: '123456789012'
     MaxLength: 12
     MinLength: 12
@@ -136,19 +136,19 @@ Conditions:
   WithSchedule:
     Fn::Equals:
     - Ref: RunOnSchedule
-    - true    
-  OrganizationIDExist: !Not 
-    - !Equals 
+    - true
+  OrganizationIDExist: !Not
+    - !Equals
       - !Ref OrganizationID
       - o-1234567890
   LocalAccountOrCentralAccount:
     !Or [!Equals [!Ref "SingleAccount", true], !Equals [!Ref "CentralAccount", true]]
-Resources:        
+Resources:
   AWSSystemsManagerAdministrationExecutionRole:
     Condition: CentralAccountOnly
     Type: AWS::IAM::Role
     Properties:
-      RoleName: 
+      RoleName:
         !Sub
           - 'AWS-SystemsManager-AutomationAdministrationRole-${RandomGUID}'
           - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
@@ -172,7 +172,7 @@ Resources:
                 Action:
                 - sts:AssumeRole
                 Resource:
-                  Fn::Sub: 
+                  Fn::Sub:
                     - arn:${AWS::Partition}:iam::*:role/AWS-SystemsManager-AutomationExecutionRole-${RandomGUID}
                     - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
               - Effect: Allow
@@ -187,13 +187,13 @@ Resources:
                   Fn::Sub:
                     - arn:${AWS::Partition}:iam::*:role/AWS-SystemsManager-AutomationExecutionRole-${RandomGUID}
                     - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
-      Tags: 
+      Tags:
         - Key: cloudformation:logical-id
-          Value: AWSSystemsManagerAdministrationExecutionRole        
+          Value: AWSSystemsManagerAdministrationExecutionRole
         - Key: cloudformation:stack-id
           Value: !Ref AWS::StackId
         - Key: cloudformation:stack-name
-          Value: !Ref AWS::StackName                    
+          Value: !Ref AWS::StackName
   AWSSystemsManagerAutomationExecutionRole:
       Type: 'AWS::IAM::Role'
       Properties:
@@ -201,10 +201,10 @@ Resources:
         AssumeRolePolicyDocument:
           Version: 2012-10-17
           Statement:
-            - !If 
+            - !If
               - LocalAccount
-              - !Ref "AWS::NoValue"       
-              - !If 
+              - !Ref "AWS::NoValue"
+              - !If
                 - OrganizationIDExist
                 - Effect: Allow
                   Principal:
@@ -252,9 +252,9 @@ Resources:
                   Resource:
                     - !If [LocalAccountOrCentralAccount, !Sub ['arn:${AWS::Partition}:s3:::${S3bucketwithPrefix}', S3bucketwithPrefix: !Ref S3Bucket], !Sub 'arn:${AWS::Partition}:s3:::${CentralS3Bucket}']
                     - !If [LocalAccountOrCentralAccount, !Sub ['arn:${AWS::Partition}:s3:::${S3bucketwithPrefix}/EC2Report-*', S3bucketwithPrefix: !Ref S3Bucket],!Sub 'arn:${AWS::Partition}:s3:::${CentralS3Bucket}/EC2Report-*']
-        Tags: 
+        Tags:
           - Key: cloudformation:logical-id
-            Value: AWSSystemsManagerAutomationExecutionRole        
+            Value: AWSSystemsManagerAutomationExecutionRole
           - Key: cloudformation:stack-id
             Value: !Ref AWS::StackId
           - Key: cloudformation:stack-name
@@ -284,7 +284,7 @@ Resources:
             - "s3:ListBucket"
             - 's3:PutObjectAcl'
             Effect: Allow
-            Resource: 
+            Resource:
               - !Sub
                 - 'arn:${AWS::Partition}:s3:::${S3bucketwithPrefix}/EC2Report-*'
                 - S3bucketwithPrefix: !Ref S3Bucket
@@ -295,7 +295,7 @@ Resources:
             Condition:
               StringLike:
                 "aws:PrincipalOrgID": [!Ref OrganizationID]
-  SystemsManagerAutomationDocument: 
+  SystemsManagerAutomationDocument:
     Type: AWS::SSM::Document
     Condition: LocalAccountOrCentralAccount
     Properties:
@@ -344,15 +344,15 @@ Resources:
                 logger.setLevel(logging.INFO)
 
                 def lambda_handler(event, context):
-                    global S3BbucketName
+                    global S3BucketName
                     global csv_path
                     global ACCOUNT_ID
 
-                    S3BbucketName = event['bucket_name']
+                    S3BucketName = event['bucket_name']
                     csv_path = event['CSV_PATH']
                     ACCOUNT_ID = event['AccountID']
 
-                    logging.info(f"bucket_name: S3BbucketName, csv_path: csv_path")
+                    logging.info(f"bucket_name: S3BucketName, csv_path: csv_path")
 
                     # Get all regions
                     regions = get_regions()
@@ -374,26 +374,24 @@ Resources:
                     s3_object_name = generage_object_name()
 
                     # check the s3 object
-                    csv_status = check_s3_object(S3BbucketName, s3_object_name)
-                    
+                    csv_status = check_s3_object(S3BucketName, s3_object_name)
+
                     if csv_status:
                         # Merge CSVs
-                        merge_csv(S3BbucketName, s3_object_name, csv_path)
+                        merge_csv(S3BucketName, s3_object_name, csv_path)
                     else:
                         # create an s3 object
-                        upload_s3(S3BbucketName, s3_object_name, csv_path)
+                        upload_s3(S3BucketName, s3_object_name, csv_path)
 
                     # delete the csv file following the successful upload
                     os.remove(csv_path)
 
                     return {
-                        "s3_bucket": S3BbucketName,
+                        "s3_bucket": S3BucketName,
                         "s3_object": s3_object_name,
                         "status": "success"
                     }
 
-                # TODO: 
-                # handle next tokens
                 def get_regions() -> list:
                     """Return a list
 
@@ -405,7 +403,7 @@ Resources:
                     except Exception as err:
                         logging.error(f"Unexpected {err=}, {type(err)=}")
                         raise
-                    
+
                     regions = response['Regions']
                     return regions
 
@@ -418,11 +416,15 @@ Resources:
                     ec2region = boto3.client('ec2',region_name=region)
                     try:
                         response = ec2region.describe_instances()
+                        InstanceReservations = response['Reservations']
+                        while "NextToken" in response:
+                          response = ec2region.describe_instances(NextToken=response['NextToken'])
+                          InstanceReservations.extend(response['Reservations'])
                     except Exception as err:
                         logging.error(f"Unexpected {err=}, {type(err)=}")
                         raise
                     instances = []
-                    for r in response['Reservations']:
+                    for r in InstanceReservations:
                         for i in r['Instances']:
                             if 'Tags' in i:
                                 for b in i['Tags']:
@@ -475,11 +477,11 @@ Resources:
                     """return f"EC2Report-{today}.csv"
                     """
 
-                def check_s3_object(S3BbucketName, object_key):
+                def check_s3_object(S3BucketName, object_key):
                     """ Check whether the CSV file is already exist or not
                     """
                     try:
-                        s3.Object(S3BbucketName, object_key).load()
+                        s3.Object(S3BucketName, object_key).load()
                     except botocore.exceptions.ClientError as e:
                         if e.response['Error']['Code'] == "404":
                             # The object does not exist.
@@ -491,14 +493,14 @@ Resources:
                         # The object does exist.
                         return True
 
-                def merge_csv(S3BbucketName, object_key, file_path):
+                def merge_csv(S3BucketName, object_key, file_path):
                     downloaded_file_path = '/tmp/ec2fromS3.csv'
                     merge_file_path = '/tmp/ec2merge.csv'
-                    logging.info(f"downloading {object_key} from {S3BbucketName}")
-                    
+                    logging.info(f"downloading {object_key} from {S3BucketName}")
+
                     # Downloaded existing file:
-                    s3.meta.client.download_file(S3BbucketName, object_key, downloaded_file_path)
-                    
+                    s3.meta.client.download_file(S3BucketName, object_key, downloaded_file_path)
+
                     with open(merge_file_path, "w") as fout:
                         # first file:
                         with open(downloaded_file_path, "r") as f:
@@ -506,38 +508,38 @@ Resources:
                             with open(file_path, "r") as f:
                                 next(f) # skip the header, portably
                                 fout.writelines(f)
-                    
-                    upload_s3(S3BbucketName, object_key, merge_file_path)
 
-                def upload_s3(S3BbucketName, object_key, file_path):
+                    upload_s3(S3BucketName, object_key, merge_file_path)
+
+                def upload_s3(S3BucketName, object_key, file_path):
                     """Create an object in an S3 bucket
 
                     Take the instance list and write it to a csv file
                     """
-                    logging.info(f"uploading {object_key} to {S3BbucketName}")
+                    logging.info(f"uploading {object_key} to {S3BucketName}")
                     try:
                         s3.meta.client.upload_file(
                             Filename=file_path,
-                            Bucket=S3BbucketName,
+                            Bucket=S3BucketName,
                             Key=object_key,
                             ExtraArgs={'ACL': 'bucket-owner-full-control'}
                         )
                     except Exception as err:
                         logging.error(f"Unexpected {err=}, {type(err)=}")
                         raise
-      Tags: 
+      Tags:
         - Key: cloudformation:logical-id
-          Value: SystemsManagerAutomationDocument        
+          Value: SystemsManagerAutomationDocument
         - Key: cloudformation:stack-id
           Value: !Ref AWS::StackId
         - Key: cloudformation:stack-name
-          Value: !Ref AWS::StackName       
+          Value: !Ref AWS::StackName
   EventBridgeRule:
     Condition: WithSchedule
     Type: AWS::Events::Rule
     Properties:
       Description: !Sub "EventBridge rule created for scheduled multi-account and multi-Region Automation using AWS Lambda and AWS Systems Manager Automation. CloudFormation StackId: ${AWS::StackId}"
-      Name: 
+      Name:
         !Sub
           - 'Schedule-Trigger-for-Lambda-MultiAccountEC2ReportBlog-${RandomGUID}'
           - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
@@ -566,7 +568,7 @@ Resources:
     Condition: CentralAccountOnly
     Type: AWS::IAM::Role
     Properties:
-      RoleName: 
+      RoleName:
         !Sub
           - 'AWS-Lambda-SSM-MultiAccountEC2ReportBlogRole-${RandomGUID}'
           - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
@@ -605,20 +607,20 @@ Resources:
             Resource:
               Fn::Sub: arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/MultiAccountEC2ReportBlog:*
             Effect: Allow
-      Tags: 
+      Tags:
         - Key: cloudformation:logical-id
-          Value: AWSLambdaSSMMultiAccountEC2ReportBlogRole        
+          Value: AWSLambdaSSMMultiAccountEC2ReportBlogRole
         - Key: cloudformation:stack-id
           Value: !Ref AWS::StackId
         - Key: cloudformation:stack-name
-          Value: !Ref AWS::StackName                        
+          Value: !Ref AWS::StackName
   MultiAccountEC2ReportBlogLambdaFunction:
     Condition: CentralAccountOnly
     Type: AWS::Lambda::Function
-    Properties: 
+    Properties:
       Description: !Sub "Lambda function created to run multi-account and multi-Region Automation using AWS Systems Manager Automation. CloudFormation StackId: ${AWS::StackId}"
-      Code: 
-        ZipFile: !Sub | 
+      Code:
+        ZipFile: !Sub |
           import boto3
           import os
           import string
@@ -639,10 +641,10 @@ Resources:
               AdministrationExecutionRoleARN=os.environ['AdministrationExecutionRoleARN']
               MasterAccountID=os.environ['MasterAccountID']
               AutomationDocumentMamrGenerateEc2Report=os.environ['AutomationDocumentMamrGenerateEc2Report']
-                            
+
               response = client.start_automation_execution(
               DocumentName=f'{AutomationDocumentMamrGenerateEc2Report}',
-              
+
               Parameters={
                   'AutomationAssumeRole':[f'{AdministrationExecutionRoleARN}']
               },
@@ -657,7 +659,7 @@ Resources:
               ]
           )
               print(response)
-      Environment: 
+      Environment:
         Variables:
             TargetAccounts: !Ref AutomationTargetAccounts
             TargetRegionId: !Ref "AWS::Region"
@@ -675,8 +677,8 @@ Resources:
           - 'MultiAccountEC2ReportBlog-${RandomGUID}'
           - { RandomGUID: !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref AWS::StackId ]]]] }
       Handler: index.handler
-      Role: !GetAtt AWSLambdaSSMMultiAccountEC2ReportBlogRole.Arn 
-      Runtime: python3.9            
+      Role: !GetAtt AWSLambdaSSMMultiAccountEC2ReportBlogRole.Arn
+      Runtime: python3.9
 Outputs:
   S3Bucket:
     Condition: LocalAccountOrCentralAccount
