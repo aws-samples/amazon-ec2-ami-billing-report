@@ -133,10 +133,8 @@ Conditions:
     Fn::Equals:
     - Ref: SingleAccount
     - true
-  WithSchedule:
-    Fn::Equals:
-    - Ref: RunOnSchedule
-    - true
+  CentralAccountWithSchedule:
+    !And [!Equals [!Ref "CentralAccount", true], !Equals [!Ref "RunOnSchedule", true]]
   OrganizationIDExist: !Not
     - !Equals
       - !Ref OrganizationID
@@ -535,7 +533,7 @@ Resources:
         - Key: cloudformation:stack-name
           Value: !Ref AWS::StackName
   EventBridgeRule:
-    Condition: WithSchedule
+    Condition: CentralAccountWithSchedule
     Type: AWS::Events::Rule
     Properties:
       Description: !Sub "EventBridge rule created for scheduled multi-account and multi-Region Automation using AWS Lambda and AWS Systems Manager Automation. CloudFormation StackId: ${AWS::StackId}"
@@ -553,7 +551,7 @@ Resources:
           - Arn
         Id: MultiAccountEC2ReportBlog
   PermissionForEventsToInvokeLambda:
-    Condition: CentralAccountOnly
+    Condition: CentralAccountWithSchedule
     Type: AWS::Lambda::Permission
     Properties:
       FunctionName:
