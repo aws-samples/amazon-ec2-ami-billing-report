@@ -446,7 +446,7 @@ Resources:
                                     AMIOwnerAlias = AMIresponse['Images'][0]['ImageOwnerAlias']
                                 else:
                                     AMIOwnerAlias = 'NA'
-                            instance = [ACCOUNT_ID, i['InstanceId'], str(Name), str(HostId), i['ImageId'], str(AMIOwnerID), str(AMIOwnerAlias), i['InstanceType'], i['CpuOptions']['CoreCount'], i['CpuOptions']['ThreadsPerCore'], i['PlatformDetails'], i['UsageOperation'], str(i['UsageOperationUpdateTime']), i['Placement']['AvailabilityZone']]
+                            instance = [ACCOUNT_ID, i['InstanceId'], str(Name), str(HostId), i['ImageId'], str(AMIOwnerID), str(AMIOwnerAlias), i['InstanceType'], i['CpuOptions']['CoreCount'], i['CpuOptions']['ThreadsPerCore'], i['PlatformDetails'], i['UsageOperation'], str(i['UsageOperationUpdateTime']), i['Placement']['AvailabilityZone'],i['LaunchTime']]
                             instances.append(instance)
                     return instances
 
@@ -456,7 +456,7 @@ Resources:
                     Take the instance list and write it to a csv file
                     """
                     # field names for a csv file
-                    fields = ['AccountID', 'InstanceId', 'Name', 'DedicatedHostID', 'AMIID', 'AMIOwnerID', 'AMIOwnerAlias', 'InstanceType', 'CoreCount', 'ThreadsPerCore', 'PlatformDetails', 'UsageOperation', 'UsageOperationUpdateTime', 'AvailabilityZone']
+                    fields = ['AccountID', 'InstanceId', 'Name', 'DedicatedHostID', 'AMIID', 'AMIOwnerID', 'AMIOwnerAlias', 'InstanceType', 'CoreCount', 'ThreadsPerCore', 'PlatformDetails', 'UsageOperation', 'UsageOperationUpdateTime', 'AvailabilityZone', 'LaunchTime']
                     with open(file_path, 'w', newline='', encoding='utf-8') as output_file:
                         # creating a csv writer object and write rows
                         try:
