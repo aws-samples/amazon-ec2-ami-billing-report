@@ -588,7 +588,8 @@ Resources:
             Action:
             - ssm:StartAutomationExecution
             Resource:
-              - Fn::Sub: arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:automation-definition/${SystemsManagerAutomationDocument}:$DEFAULT
+              - Fn::Sub: arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:document/${SystemsManagerAutomationDocument}
+              - Fn::Sub: arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:automation-execution/*
           - Action: iam:PassRole
             Resource:
               Fn::GetAtt:
